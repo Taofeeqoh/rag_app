@@ -1,0 +1,8 @@
+
+streamlit
+langchain
+langchain-community
+langchain-huggingface
+openai
+faiss-cpu
+python-dotenv

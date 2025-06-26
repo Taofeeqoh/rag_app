@@ -1,0 +1,7 @@
+Artificial Intelligence (AI) refers to the simulation of human intelligence in machines that are programmed to think like humans and mimic their actions. 
+
+There are different types of AI: narrow AI, general AI, and superintelligent AI. Narrow AI is designed to perform a narrow task (e.g., only facial recognition or only internet searches or only driving a car). 
+
+General AI would outperform humans at nearly every cognitive task. Superintelligent AI is a hypothetical agent that possesses intelligence far surpassing that of the brightest and most gifted human minds.
+
+AI is being used in various domains like healthcare, finance, agriculture, and education. It helps in automating repetitive tasks, improving decision-making, and uncovering hidden patterns in large datasets.
