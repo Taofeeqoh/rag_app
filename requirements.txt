@@ -6,3 +6,6 @@ langchain-huggingface
 openai
 faiss-cpu
 python-dotenv
+transformers
+sentence-transformers
+huggingface-hub
