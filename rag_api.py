@@ -2,6 +2,8 @@ import os
 import glob
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import TextLoader, PyPDFLoader
+from langchain.schema import Document as LC_Document
+from docx import Document as DocxDocument  # for .docx support
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from openai import OpenAI
@@ -11,9 +13,15 @@ load_dotenv()
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
+def load_docx_as_documents(file_path):
+    doc = DocxDocument(file_path)
+    full_text = "\n".join([p.text for p in doc.paragraphs])
+    return [LC_Document(page_content=full_text)]
+
 def load_and_index_documents(directory="documents", index_path="faiss_index"):
     file_paths = glob.glob(f"{directory}/*.txt")
     pdf_paths = glob.glob(f"{directory}/*.pdf")
+    docx_paths = glob.glob(f"{directory}/*.docx")
     documents = []
 
     for path in file_paths:
@@ -23,6 +31,10 @@ def load_and_index_documents(directory="documents", index_path="faiss_index"):
     for path in pdf_paths:
         loader = PyPDFLoader(path)
         documents.extend(loader.load())
+
+     # Load DOCX files
+    for path in docx_paths:
+        documents.extend(load_docx_as_documents(path))
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
     split_docs = splitter.split_documents(documents)
@@ -55,7 +67,7 @@ def setup_rag(index_path="faiss_index"):
 
             prompt = f"""
 You are a helpful assistant. You should be able to Explain your Context, summarize or answer any question related to your context. Use only the context below to answer the question. 
-If the answer is not found in the context, say "I could not find relevant information in the documents."
+If the answer is not found in the context you can rephrase the question so as to find something similar but let us know you rephrase by saying do you mean your rephrased word that can be find in the context, say "I could not find relevant information in the documents."
 
 Context:
 {context}
