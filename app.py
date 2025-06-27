@@ -13,7 +13,7 @@ if not os.path.exists(INDEX_PATH):
 rag_chain = setup_rag()
 
 st.title("📚 RAG Assistant")
-st.write("Upload your .txt or .pdf files and ask questions about them.")
+st.write("Upload your .txt, .pdf or .docx files and ask questions about them.")
 
 # ===== Main Chat Section =====
 question = st.text_input("Ask your question:")
@@ -28,7 +28,7 @@ if st.button("Ask"):
 
 # ===== Sidebar: Upload and Re-index =====
 st.sidebar.title("📁 Upload Documents")
-uploaded_files = st.sidebar.file_uploader("Upload .txt or .pdf files", type=["txt","pdf"], accept_multiple_files=True)
+uploaded_files = st.sidebar.file_uploader("Upload a document .txt, .pdf or .docx files", type=["txt","pdf","docx"], accept_multiple_files=True)
 
 if st.sidebar.button("Re-index Documents"):
     if uploaded_files:
@@ -40,4 +40,4 @@ if st.sidebar.button("Re-index Documents"):
         load_and_index_documents()
         st.sidebar.success("Documents re-indexed!")
     else:
-        st.sidebar.warning("Please upload .txt or .pdf files first.")
+        st.sidebar.warning("Please upload .txt, .pdf or .docx files first.")
