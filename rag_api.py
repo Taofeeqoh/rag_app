@@ -8,6 +8,8 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from openai import OpenAI
 from dotenv import load_dotenv
+import time
+from openai import RateLimitError
 
 load_dotenv()
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
@@ -85,16 +87,25 @@ Context:
 Question:
 {question}
 """
+        
+        for attempt in range(3):
+            try:
+                response = self.client.chat.completions.create(
+                    messages=[
+                        {"role": "system", "content": "You are a helpful assistant that strictly answers based on provided context."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    model="openai/gpt-4o",
+                    temperature=0.7,
+                    max_tokens=1024
+                )
+                return response.choices[0].message.content  # Only if it succeeds
+            except Exception as e:
+                print(f"Attempt {attempt + 1} failed: {e}")
+                if attempt < 2:
+                    time.sleep(5)  # Wait 5 seconds before retrying
+                else:
+                    return "There was an error reaching the language model after multiple attempts. Please try again later."
 
-            response = self.client.chat.completions.create(
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant that strictly answers based on provided context."},
-                    {"role": "user", "content": prompt}
-                ],
-                model="openai/gpt-4o",
-                temperature=0.7,
-                max_tokens=1024
-            )
-            return response.choices[0].message.content
-
+    
     return GitHubRAG(retriever, client)
