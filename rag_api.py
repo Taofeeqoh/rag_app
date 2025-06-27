@@ -54,7 +54,7 @@ def setup_rag(index_path="faiss_index"):
         base_url="https://models.github.ai/inference",
         api_key=GITHUB_TOKEN,
     )
-
+    
     class GitHubRAG:
         def __init__(self, retriever, client):
             self.retriever = retriever
@@ -88,24 +88,24 @@ Question:
 {question}
 """
         
-        for attempt in range(3):
-            try:
-                response = self.client.chat.completions.create(
-                    messages=[
-                        {"role": "system", "content": "You are a helpful assistant that strictly answers based on provided context."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    model="openai/gpt-4o",
-                    temperature=0.7,
-                    max_tokens=1024
-                )
-                return response.choices[0].message.content  # Only if it succeeds
-            except Exception as e:
-                print(f"Attempt {attempt + 1} failed: {e}")
-                if attempt < 2:
-                    time.sleep(5)  # Wait 5 seconds before retrying
-                else:
-                    return "There was an error reaching the language model after multiple attempts. Please try again later."
+            for attempt in range(3):
+                try:
+                    response = self.client.chat.completions.create(
+                        messages=[
+                            {"role": "system", "content": "You are a helpful assistant that strictly answers based on provided context."},
+                            {"role": "user", "content": prompt}
+                        ],
+                        model="openai/gpt-4o",
+                        temperature=0.7,
+                        max_tokens=1024
+                    )
+                    return response.choices[0].message.content  # Only if it succeeds
+                except Exception as e:
+                    print(f"Attempt {attempt + 1} failed: {e}")
+                    if attempt < 2:
+                        time.sleep(5)  # Wait 5 seconds before retrying
+                    else:
+                        return "There was an error reaching the language model after multiple attempts. Please try again later."
 
     
     return GitHubRAG(retriever, client)
