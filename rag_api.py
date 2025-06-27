@@ -1,7 +1,7 @@
 import os
 import glob
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader, PyPDFLoader
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from openai import OpenAI
@@ -13,10 +13,15 @@ EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 def load_and_index_documents(directory="documents", index_path="faiss_index"):
     file_paths = glob.glob(f"{directory}/*.txt")
+    pdf_paths = glob.glob(f"{directory}/*.pdf")
     documents = []
 
     for path in file_paths:
         loader = TextLoader(path)
+        documents.extend(loader.load())
+
+    for path in pdf_paths:
+        loader = PyPDFLoader(path)
         documents.extend(loader.load())
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
@@ -46,10 +51,10 @@ def setup_rag(index_path="faiss_index"):
             context = "\n".join([doc.page_content for doc in docs]) or "No documents found."
 
             if not context.strip():
-                return "I could not find any relevant information in the documents to answer your question."
+                return "I couldn't find any relevant information in the documents to answer your question."
 
             prompt = f"""
-You are a helpful assistant. Use only the context below to answer the question. 
+You are a helpful assistant. You should be able to Explain your Context, summarize or answer any question related to your context. Use only the context below to answer the question. 
 If the answer is not found in the context, say "I could not find relevant information in the documents."
 
 Context:
