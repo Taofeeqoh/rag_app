@@ -41,7 +41,7 @@ def load_and_index_documents(directory="documents", index_path="faiss_index"):
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
     split_docs = splitter.split_documents(documents)
 
-    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL,model_kwargs={"device": "cpu"})
     db = FAISS.from_documents(split_docs, embeddings)
     db.save_local(index_path)
 
